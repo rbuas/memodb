@@ -9,6 +9,10 @@ var jsext = require("jsext");
 var MemoCache = require("memocache");
 
 MemoDB.MemoRouter = require("./memorouter");
+MemoDB.MemoModel = require("./models/memo");
+MemoDB.WapModel = require("./models/wap");
+MemoDB.QuoteModel = require("./models/quote");
+
 
 /**
  * MemoDB
