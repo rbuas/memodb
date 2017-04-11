@@ -27,6 +27,6 @@
     "yargs": "^4.8.0"
   },
   "scripts": {
-    "test": "mocha *.unittest.js"
+    "unittest": "mocha *.unittest.js"
   }
 }
