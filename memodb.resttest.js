@@ -3,7 +3,7 @@ global.ROOT_DIR = process.cwd() || __dirname;
 var expect = require("chai").expect;
 var express = require("express");
 var MemoCache = require("memocache");
-var RestTest = require("resttest");
+var RestTest = require("webdrone").RestTest;
 
 var MemoDB = require("./memodb");
 var MemoRouter = require("./memorouter");

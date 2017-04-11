@@ -1,4 +1,4 @@
-# jsext
+# memodb
 
 A nodejs library to index data into files using json.
 
