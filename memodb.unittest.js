@@ -1,12 +1,11 @@
 global.ROOT_DIR = process.cwd() || __dirname;
 
 var expect = require("chai").expect;
-var assert = require("chai").assert;
 var MemoCache = require("memocache");
 
 var MemoDB = require("./memodb");
 
-describe("unit.memo", function() {
+describe("unit.memodb", function() {
     var mcache;
     var memodb;
 
