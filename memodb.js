@@ -1,7 +1,5 @@
 module.exports = MemoDB;
 
-global.ROOT_DIR = process.cwd() || __dirname;
-
 var path = require("path");
 var fs = require("fs");
 var moment = require("moment");

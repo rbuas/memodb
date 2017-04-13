@@ -24,7 +24,7 @@ function MemoRestTest (options) {
             console.log("MEMORESTTEST::WARNING : memory was attempt next to the limit : ", stats);
         }
     });
-    self.memodb = new MemoDB({mcache:self.mcache, memopath:ROOT_DIR + "/test/memo", type:"memo"});
+    self.memodb = new MemoDB({mcache:self.mcache, memopath:"./test/memo", type:"memo"});
     self.memoRouter = new MemoRouter(self.memodb);
     self.router.param("memo", self.memoRouter.memoParam());
     self.router.get("/keys", self.memoRouter.keys());
