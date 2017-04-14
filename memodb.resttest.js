@@ -1,5 +1,6 @@
 global.ROOT_DIR = process.cwd() || __dirname;
 
+var jsext = require("jsext");
 var expect = require("chai").expect;
 var express = require("express");
 var MemoCache = require("memocache");
