@@ -466,6 +466,35 @@ MemoDB.prototype.count = function () {
     return keys && keys.length;
 }
 
+/**
+ * find Search for the memos that match with where conditions by a logic comparation OR or AND
+ * @param {Object} where Object that has the same keys in schema associated with values to test against the memo property.
+ * @param {String} logic AND|OR. 
+ *                       In the case of AND all where properties must be satisfied, 
+ *                       and in the case of OR only one property must to be satisfied to include a memo into the search response.
+ * @return {Promise} Responses as reject({error:String}) or resolve([memo]) 
+ */
+MemoDB.prototype.find = function (where, logic) {
+    var self = this;
+    logic = logic || "AND";
+    where = where && where.pick(Object.keys(self.SCHEMA));
+    return new Promise(function(resolve, reject) {
+        self.keys()
+        .then(function(keys) {
+            var tasks = keys.map(function(key) {
+                return self.get(key)
+                .then(function(memo) {
+                    var isInSearch = (logic == "AND") ? verifyLogicAnd(where, memo) : verifyLogicOr(where, memo);
+                    return isInSearch && memo || null;
+                });
+            });
+            return Promise.all(tasks);
+        })
+    });
+}
+
+
+
 // PRIVATE FUNCTIONS
 
 function assertStoreDir (self) {
@@ -478,5 +507,33 @@ function assertMemo (self, memo) {
     if(!self.options.autoid && !memo.id) return false;
 
     if(!memo.id) memo.id = moment().format("YYYYMMDDhhmmssSSSS");
+    return true;
+}
+
+function verifyLogicOr (where, memo) {
+    var whereKeys = Object.keys(where);
+    var hasWhereKeys = where && whereKeys && whereKeys.length;
+    if(!memo) return false;
+    if(!hasWhereKeys) return true;
+
+    for(var i = 0; i < whereKeys.length ; ++i) {
+        var key = whereKey[i];
+        if(memo[key] == where[key])
+            return true;
+    }
+    return false;
+}
+
+function verifyLogicAnd (where, memo) {
+    var whereKeys = Object.keys(where);
+    var hasWhereKeys = where && whereKeys && whereKeys.length;
+    if(!memo) return false;
+    if(!hasWhereKeys) return true;
+
+    for(var i = 0; i < whereKeys.length ; ++i) {
+        var key = whereKey[i];
+        if(memo[key] != where[key])
+            return false;
+    }
     return true;
 }
