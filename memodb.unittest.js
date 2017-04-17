@@ -1,8 +1,7 @@
-global.ROOT_DIR = process.cwd() || __dirname;
-
 var expect = require("chai").expect;
-var MemoCache = require("memocache");
+var moment = require("moment");
 
+var MemoCache = require("memocache");
 var MemoDB = require("./memodb");
 
 describe("unit.memodb", function() {
@@ -586,6 +585,71 @@ describe("unit.memodb", function() {
             .then(function(list){
                 expect(list).to.be.ok;
                 expect(list.length).to.be.equal(4);
+                done();
+            })
+            .catch(done);
+        });
+    });
+
+    describe("find", function() {
+        var dateMinus0 = moment();
+        var dateMinus10 = moment().subtract(10, "days");
+        var dateMinus30 = moment().subtract(30, "days");
+
+        beforeEach(function(done) { 
+            memodb.removeAll()
+            .then(function() {
+                return Promise.all([
+                    memodb.create({id:"01",password:"123456",since:dateMinus0, status:"ON"}),
+                    memodb.create({id:"02",password:"123456",since:dateMinus10, status:"ON"}),
+                    memodb.create({id:"03",password:"123456",since:dateMinus30, status:"ON"}),
+
+                    memodb.create({id:"04",password:"123456",since:dateMinus0, status:"OFF"}),
+                    memodb.create({id:"05",password:"123456",since:dateMinus10, status:"OFF"}),
+                    memodb.create({id:"06",password:"123456",since:dateMinus30, status:"OFF"}),
+
+                    memodb.create({id:"07",password:"123456",since:dateMinus0, status:"OUT"}),
+                    memodb.create({id:"08",password:"123456",since:dateMinus10, status:"OUT"}),
+                    memodb.create({id:"09",password:"123456",since:dateMinus30, status:"OUT"}),
+
+                    memodb.create({id:"10",password:"123456",since:dateMinus0, status:"CONFIRM"}),
+                    memodb.create({id:"11",password:"123456",since:dateMinus10, status:"CONFIRM"}),
+                    memodb.create({id:"12",password:"123456",since:dateMinus30, status:"CONFIRM"}),
+
+                    memodb.create({id:"13",password:"123456",since:dateMinus0, status:"REVIVE"}),
+                    memodb.create({id:"14",password:"123456",since:dateMinus10, status:"REVIVE"}),
+                    memodb.create({id:"15",password:"123456",since:dateMinus30, status:"REVIVE"}),
+
+                    memodb.create({id:"16",password:"123456",since:dateMinus0, status:"BLOCK"}),
+                    memodb.create({id:"17",password:"123456",since:dateMinus10, status:"BLOCK"}),
+                    memodb.create({id:"18",password:"123456",since:dateMinus30, status:"BLOCK"})
+                ]);
+            })
+            .then(function() { done(); })
+            .catch(done); 
+        });
+
+        afterEach(function(done) { 
+            memodb.removeAll()
+            .then(function() {done();})
+            .catch(done); 
+        });
+
+        it("must get an array of 3 memos", function(done) {
+            memodb.find({status:"REVIVE"})
+            .then(function(userlist) {
+                expect(userlist).to.be.ok;
+                expect(userlist.length).to.be.equal(3);
+                done();
+            })
+            .catch(done);
+        });
+
+        it("must get an error with 12 memos", function(done) {
+            memodb.find({since:function(val) {return moment(val) >= dateMinus10;}})
+            .then(function(userlist) {
+                expect(userlist).to.be.ok;
+                expect(userlist.length).to.be.equal(12);
                 done();
             })
             .catch(done);

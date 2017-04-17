@@ -60,8 +60,8 @@ MemoDB.prototype.DEFAULTOPTIONS = {
     },
     schemadefault : function() {
         return {
-            since : Date.now(),
-            lastupdate : Date.now(),
+            since : moment(),
+            lastupdate : moment(),
             status : "PUBLIC",
             content : "",
             author : ""
@@ -170,7 +170,7 @@ MemoDB.prototype.update = function (memo) {
 
         self.get(memo.id)
         .then(function(oldMemo) {
-            if(oldMemo) memo = Object.assign({}, oldMemo, memo, {lastupdate : Date.now()});
+            if(oldMemo) memo = Object.assign({}, oldMemo, memo, {lastupdate : moment()});
 
             return self.remove(memo.id);
         })
@@ -474,22 +474,25 @@ MemoDB.prototype.count = function () {
  *                       and in the case of OR only one property must to be satisfied to include a memo into the search response.
  * @return {Promise} Responses as reject({error:String}) or resolve([memo]) 
  */
-MemoDB.prototype.find = function (where, logic) {
+MemoDB.prototype.find = function (where, logic, props) {
     var self = this;
     logic = logic || "AND";
     where = where && where.pick(Object.keys(self.SCHEMA));
     return new Promise(function(resolve, reject) {
-        self.keys()
-        .then(function(keys) {
-            var tasks = keys.map(function(key) {
-                return self.get(key)
-                .then(function(memo) {
-                    var isInSearch = (logic == "AND") ? verifyLogicAnd(where, memo) : verifyLogicOr(where, memo);
-                    return isInSearch && memo || null;
-                });
+        var keys = self.keys()
+        var tasks = keys.map(function(key) {
+            return self.get(key, props)
+            .then(function(memo) {
+                var isInSearch = (logic == "AND") ? verifyLogicAnd(where, memo) : verifyLogicOr(where, memo);
+                return isInSearch && memo || null;
             });
-            return Promise.all(tasks);
+        });
+        Promise.all(tasks)
+        .then(function(taskResponse) {
+            return taskResponse.clean();
         })
+        .then(resolve)
+        .catch(reject);
     });
 }
 
@@ -518,22 +521,35 @@ function verifyLogicOr (where, memo) {
 
     for(var i = 0; i < whereKeys.length ; ++i) {
         var key = whereKey[i];
-        if(memo[key] == where[key])
-            return true;
+        var whereKey = where[key];
+        if(typeof(whereKey) == "function") {
+            if(whereKey(memo[key]))
+                return true;
+        } else {
+            if(memo[key] == whereKey)
+                return true;
+        } 
     }
     return false;
 }
 
 function verifyLogicAnd (where, memo) {
     var whereKeys = Object.keys(where);
-    var hasWhereKeys = where && whereKeys && whereKeys.length;
+    var hasWhereKeys = where && whereKeys && whereKeys.length && true;
     if(!memo) return false;
     if(!hasWhereKeys) return true;
 
     for(var i = 0; i < whereKeys.length ; ++i) {
-        var key = whereKey[i];
-        if(memo[key] != where[key])
-            return false;
+        var key = whereKeys[i];
+        var whereKey = where[key];
+        var memoVal = memo[key];
+        if(typeof(whereKey) == "function") {
+            if(!whereKey(memoVal)) 
+                return false;
+        } else {
+            if(memoVal != whereKey)
+                return false;
+        } 
     }
     return true;
 }
