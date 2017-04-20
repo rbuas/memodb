@@ -46,9 +46,7 @@ module.exports.SCHEMADEFAULT = function() {
 
         canonical : "",
         metatitle : "",
-        metalocale : "",
         metadescription : "",
-        metaentity : "",
         metaimage : "",
         metafollow : true,
         metaindex : true
