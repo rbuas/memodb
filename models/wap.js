@@ -15,6 +15,7 @@ module.exports.SCHEMA = {
     contentlist : Array,
     category : Array,
     crosslink : Array,
+    breadcrumb : Array,
 
     canonical : String,
     metatitle : String,
