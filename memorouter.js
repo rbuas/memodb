@@ -10,22 +10,24 @@ function MemoRouter (mdb) {
     self.mdb = mdb;
 }
 
-MemoRouter.prototype.memoParam = function () {
+MemoRouter.prototype.memoParam = function (param) {
     var self = this;
     return function (req, res, next, memo) {
-        var memoid = req.params[self.mdb.TYPE] || memo;
+        var memoparam = param || self.mdb.TYPE;
+        var memoparamid = param || self.mdb.TYPE + "id";
+        var memoid = req.params[memoparam] || memo;
         if(!memoid) return next();
 
         self.mdb.get(memoid)
         .then(function(memo) {
-            req[self.mdb.TYPE + "id"] = memoid;
-            req[self.mdb.TYPE] = memo;
+            req[memoparamid] = memoid;
+            req[memoparam] = memo;
             next();
         })
         .catch(function(error){
-            req[self.mdb.TYPE + "id"] = memoid;
-            req[self.mdb.TYPE] = null;
-            req[self.mdb.TYPE + "error"] = error;
+            req[memoparamid] = memoid;
+            req[memoparam] = null;
+            req[memoparam + "error"] = error;
             next();
         });
     };
