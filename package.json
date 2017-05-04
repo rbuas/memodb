@@ -16,15 +16,15 @@
     "url": "http://github.com/rbuas/memodb.git"
   },
   "dependencies": {
-    "jsext": "^1.0.0",
-    "memocache": "^1.0.2"
+    "jsext": "*",
+    "memocache": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "express": "^4.15.2",
     "mocha": "^2.4",
     "moment": "^2.18.1",
-    "webdrone": "^1.0.0",
+    "webdrone": "*",
     "yargs": "^4.8.0"
   },
   "scripts": {
