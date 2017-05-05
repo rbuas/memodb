@@ -10,7 +10,7 @@
     "data"
   ],
   "license": "MIT",
-  "main": "./memodb",
+  "main": "./index",
   "repository": {
     "type": "git",
     "url": "http://github.com/rbuas/memodb.git"
