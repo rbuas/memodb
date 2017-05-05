@@ -1,6 +1,6 @@
 {
   "name": "memodb",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "A nodejs library to index data into files using json.",
   "author": "rbuas <rodrigobuas@gmail.com>",
   "keywords": [
