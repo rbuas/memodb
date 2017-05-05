@@ -6,10 +6,7 @@ var moment = require("moment");
 var jsext = require("jsext");
 var MemoCache = require("memocache");
 
-MemoDB.MemoRouter = require("./memorouter");
-MemoDB.MemoModel = require("./models/memo");
-MemoDB.WapModel = require("./models/wap");
-MemoDB.QuoteModel = require("./models/quote");
+var MemoRouter = require("./memorouter");
 
 
 /**
@@ -25,6 +22,7 @@ function MemoDB (options) {
             console.log("MEMO : alert memory usage ", stats);
         }
     });
+    self.router = new MemoRouter(self);
     self.TYPE = self.options.type;
     if(!self.TYPE) throw new Error("missing required type name");
     self.SCHEMA = self.options.schema;
