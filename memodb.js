@@ -477,7 +477,7 @@ MemoDB.prototype.find = function (where, logic, props) {
     logic = logic || "AND";
     where = where && where.pick(Object.keys(self.SCHEMA));
     return new Promise(function(resolve, reject) {
-        var keys = self.keys()
+        var keys = self.keys();
         var tasks = keys.map(function(key) {
             return self.get(key, props)
             .then(function(memo) {
@@ -488,6 +488,39 @@ MemoDB.prototype.find = function (where, logic, props) {
         Promise.all(tasks)
         .then(function(taskResponse) {
             return taskResponse.clean();
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+}
+
+MemoDB.prototype.getIndex = function (index, list, props) {
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+        var indexes = {};
+        var keys = self.keys();
+        var tasks = keys.map(function(key) {
+            return self.get(key);
+        });
+
+        Promise.all(tasks)
+        .then(function(taskResponse) {
+            return taskResponse.clean();
+        })
+        .then(function(memos) {
+            var indexes = {};
+            memos.forEach(function(memo) {
+                var memoIndex = memo[index];
+                if(!memoIndex) return;
+
+                indexes[memoIndex] = indexes[memoIndex] || [];
+                indexes[memoIndex].push(memo.pick(props));
+            });
+            return indexes;
+        })
+        .then(function(indexes) {
+            return list && indexes.pick(list) || indexes;
         })
         .then(resolve)
         .catch(reject);

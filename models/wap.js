@@ -12,6 +12,7 @@ module.exports.SCHEMA = {
     title : String,
     resume : String,
     content : String,
+    listtype : String,
     contentlist : Array,
     category : Array,
     crosslink : Array,
