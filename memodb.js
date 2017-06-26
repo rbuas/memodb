@@ -1,12 +1,12 @@
 module.exports = MemoDB;
 
-var path = require("path");
-var fs = require("fs");
-var moment = require("moment");
-var jsext = require("jsext");
-var MemoCache = require("memocache");
+const path = require("path");
+const fs = require("fs");
+const moment = require("moment");
+const jsext = require("jsext");
+const MemoCache = require("memocache");
 
-var MemoRouter = require("./memorouter");
+const MemoRouter = require("./memorouter");
 
 
 /**
